@@ -11,7 +11,7 @@ pygame.init()
 WIDTH, HEIGHT = 1000, 750
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Sherman Dining: The Game")
-icon_image = pygame.image.load("assets/images/brandeis_logo.jpg")
+icon_image = pygame.image.load("assets/images/favicon.ico")
 pygame.display.set_icon(icon_image)
 
 # Colors
@@ -576,5 +576,4 @@ def main():
                 pygame.display.update()
                 clock.tick(60)
 
-if __name__ == "__main__":
-    main()
+main()
