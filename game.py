@@ -2,7 +2,7 @@ import pygame
 import random
 import sys
 
-version = "1.2.3"
+version = "1.2.4"
 
 # Initialize Pygame
 pygame.init()
@@ -37,9 +37,12 @@ player_speed = 15
 # Food
 food_width = 80  
 food_height = 80  
-food_speed = 4
-food_limit = 8
-food_generate_delay = 60  # Delay between generating each food item
+food_speed_default = 3
+food_speed = food_speed_default
+food_limit = 12
+food_generate_delay_default = 35
+food_generate_delay = food_generate_delay_default
+food_generate_min = 20  # Delay between generating each food item
 good_food_images = [
     pygame.transform.scale(pygame.image.load("assets/images/food/07_bread.png"), (food_width, food_height)),  
     pygame.transform.scale(pygame.image.load("assets/images/food/15_burger.png"), (food_width, food_height)),  
@@ -330,13 +333,12 @@ def draw_pause_menu(background, food_list):
                     return False
 
 
-
 def generate_food():
     global food_positions
-    # Generate food at random x-coordinates, ensuring they don't overlap
+    # Generate food at random x-coordinates, avoiding recent positions
     while True:
         x = random.randint(0, WIDTH - food_width)
-        if x not in food_positions:  # Check if position is already occupied
+        if x not in food_positions or random.random() < 0.5:  # Adjust probability as desired
             food_positions.append(x)
             break
     y = -food_height  # Start from the top of the screen
@@ -358,21 +360,25 @@ def game_over(score, elapsed_time):
         else:
             return False
 
-def next_level():
-    global food_speed, food_limit, level
+def increase_difficulty():
+    global food_speed, food_limit, food_generate_delay, food_generate_min
     food_speed += 0.1
+    if food_generate_delay >= food_generate_min:
+        food_generate_delay -= 1
 
 def reset_game_state():
-    global score, start_time, player_x, player_y, food_list, lives
+    global score, start_time, player_x, player_y, food_list, lives, food_generate_delay, food_generate_delay_default, food_speed, food_speed_default
     score = 0
     start_time = pygame.time.get_ticks()
     player_x = WIDTH // 2 - player_width // 2  
     player_y = HEIGHT - 120  
     food_list = []
+    food_speed = food_speed_default
+    food_generate_delay = food_generate_delay_default
     lives = 3
 
 def main():
-    global score, start_time, player_x, player_y, level, food_speed, food_list, food_limit, lives, game_bg_image
+    global score, start_time, player_x, player_y, food_speed, food_list, food_limit, lives, game_bg_image
 
     while True:
         if not draw_menu():
@@ -468,7 +474,7 @@ def main():
                             running = False
 
                     if score % 10 == 0:
-                        next_level()
+                        increase_difficulty()
                     
                     food_list.remove(food)
 
