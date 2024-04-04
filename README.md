@@ -4,7 +4,7 @@ Welcome to Sherman Dining: The Game! This repository contains the source code fo
 
 ## Gameplay
 
-- Move your plate left and right using the left and right arrow keys on your keyboard.
+- Move your plate left and right using the left and right arrow keys or A and D key on your keyboard.
 - Catch as many good food items as you can to increase your score.
 - Avoid bad food items to prevent losing lives.
 - Your lives are limited, so try to survive as long as possible.
