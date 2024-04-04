@@ -2,7 +2,7 @@ import pygame
 import random
 import sys
 
-version = "1.2.1"
+version = "1.2.2"
 
 # Initialize Pygame
 pygame.init()
@@ -11,6 +11,8 @@ pygame.init()
 WIDTH, HEIGHT = 1000, 750
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Sherman Dining: The Game")
+icon_image = pygame.image.load("assets/images/brandeis_logo.jpg")
+pygame.display.set_icon(icon_image)
 
 # Colors
 WHITE = (255, 255, 255)
@@ -21,6 +23,8 @@ GREEN = (0, 255, 0)
 # Fonts
 font = pygame.font.SysFont(None, 30)
 menu_font = pygame.font.SysFont(None, 40)
+text_color = BLACK
+text_bg = WHITE
 
 # Player
 player_width = 90
@@ -37,26 +41,26 @@ food_speed = 4
 food_limit = 8
 food_generate_delay = 60  # Delay between generating each food item
 good_food_images = [
-    pygame.transform.scale(pygame.image.load("assets/images/07_bread.png"), (food_width, food_height)),  
-    pygame.transform.scale(pygame.image.load("assets/images/15_burger.png"), (food_width, food_height)),  
-    pygame.transform.scale(pygame.image.load("assets/images/38_friedegg.png"), (food_width, food_height)),  
-    pygame.transform.scale(pygame.image.load("assets/images/22_cheesecake.png"), (food_width, food_height)),  
-    pygame.transform.scale(pygame.image.load("assets/images/54_hotdog.png"), (food_width, food_height)), 
-    pygame.transform.scale(pygame.image.load("assets/images/73_omlet.png"), (food_width, food_height)),  
-    pygame.transform.scale(pygame.image.load("assets/images/81_pizza.png"), (food_width, food_height)),  
-    pygame.transform.scale(pygame.image.load("assets/images/92_sandwich.png"), (food_width, food_height)), 
-    pygame.transform.scale(pygame.image.load("assets/images/79_pancakes.png"), (food_width, food_height)),
-    pygame.transform.scale(pygame.image.load("assets/images/85_roastedchicken.png"), (food_width, food_height)),
-    pygame.transform.scale(pygame.image.load("assets/images/88_salmon.png"), (food_width, food_height)),
-    pygame.transform.scale(pygame.image.load("assets/images/28_cookies.png"), (food_width, food_height)),
-    pygame.transform.scale(pygame.image.load("assets/images/57_icecream.png"), (food_width, food_height)),
-    pygame.transform.scale(pygame.image.load("assets/images/67_macncheese.png"), (food_width, food_height)),
-    pygame.transform.scale(pygame.image.load("assets/images/44_frenchfries.png"), (food_width, food_height)),
-    pygame.transform.scale(pygame.image.load("assets/images/69_meatball.png"), (food_width, food_height)),
-    pygame.transform.scale(pygame.image.load("assets/images/94_spaghetti.png"), (food_width, food_height)),
-    pygame.transform.scale(pygame.image.load("assets/images/97_sushi.png"), (food_width, food_height))
+    pygame.transform.scale(pygame.image.load("assets/images/food/07_bread.png"), (food_width, food_height)),  
+    pygame.transform.scale(pygame.image.load("assets/images/food/15_burger.png"), (food_width, food_height)),  
+    pygame.transform.scale(pygame.image.load("assets/images/food/38_friedegg.png"), (food_width, food_height)),  
+    pygame.transform.scale(pygame.image.load("assets/images/food/22_cheesecake.png"), (food_width, food_height)),  
+    pygame.transform.scale(pygame.image.load("assets/images/food/54_hotdog.png"), (food_width, food_height)), 
+    pygame.transform.scale(pygame.image.load("assets/images/food/73_omlet.png"), (food_width, food_height)),  
+    pygame.transform.scale(pygame.image.load("assets/images/food/81_pizza.png"), (food_width, food_height)),  
+    pygame.transform.scale(pygame.image.load("assets/images/food/92_sandwich.png"), (food_width, food_height)), 
+    pygame.transform.scale(pygame.image.load("assets/images/food/79_pancakes.png"), (food_width, food_height)),
+    pygame.transform.scale(pygame.image.load("assets/images/food/85_roastedchicken.png"), (food_width, food_height)),
+    pygame.transform.scale(pygame.image.load("assets/images/food/88_salmon.png"), (food_width, food_height)),
+    pygame.transform.scale(pygame.image.load("assets/images/food/28_cookies.png"), (food_width, food_height)),
+    pygame.transform.scale(pygame.image.load("assets/images/food/57_icecream.png"), (food_width, food_height)),
+    pygame.transform.scale(pygame.image.load("assets/images/food/67_macncheese.png"), (food_width, food_height)),
+    pygame.transform.scale(pygame.image.load("assets/images/food/44_frenchfries.png"), (food_width, food_height)),
+    pygame.transform.scale(pygame.image.load("assets/images/food/69_meatball.png"), (food_width, food_height)),
+    pygame.transform.scale(pygame.image.load("assets/images/food/94_spaghetti.png"), (food_width, food_height)),
+    pygame.transform.scale(pygame.image.load("assets/images/food/97_sushi.png"), (food_width, food_height))
 ]
-bad_food_image = pygame.transform.scale(pygame.image.load("assets/images/dubious_food.png"), (food_width, food_height)) 
+bad_food_image = pygame.transform.scale(pygame.image.load("assets/images/food/dubious_food.png"), (food_width, food_height)) 
 good_food_sound = pygame.mixer.Sound("assets/sounds/yum_roblox_turkey_leg.mp3")
 good_food_sound.set_volume(0.5)
 bad_food_sound = pygame.mixer.Sound("assets/sounds/vine_boom.mp3")
@@ -94,16 +98,19 @@ def save_high_score(score):
 # Load high score
 high_score = load_high_score()
 
-def draw_high_score():
-    text = font.render("High Score: " + str(high_score), True, BLACK)
-    screen.blit(text, (WIDTH - text.get_width() - 10, 10))
-
 # Update high score
 def update_high_score(score):
     global high_score
     if score > high_score:
         high_score = score
         save_high_score(high_score)
+
+def draw_high_score():
+    text_surface = font.render("High Score: " + str(high_score), True, text_color)
+    background_surface = pygame.Surface((text_surface.get_width(), text_surface.get_height()))
+    background_surface.fill(text_bg)
+    screen.blit(background_surface, (WIDTH - text_surface.get_width() - 10, 10))
+    screen.blit(text_surface, (WIDTH - text_surface.get_width() - 10, 10))
 
 def draw_player(player_x, player_y):
     screen.blit(player_image, (player_x, player_y))
@@ -112,16 +119,25 @@ def draw_food(x, y, food):
     screen.blit(food['image'], (x, y))
 
 def draw_score(score):
-    text = font.render("Score: " + str(score), True, BLACK)
-    screen.blit(text, (10, 10))
+    text_surface = font.render("Score: " + str(score), True, text_color)
+    background_surface = pygame.Surface((text_surface.get_width(), text_surface.get_height()))
+    background_surface.fill(text_bg)
+    screen.blit(background_surface, (10, 10))
+    screen.blit(text_surface, (10, 10))
 
 def draw_lives(lives):
-    text = font.render("Lives: " + str(lives), True, BLACK)
-    screen.blit(text, (10, 40))
+    text_surface = font.render("Lives: " + str(lives), True, text_color)
+    background_surface = pygame.Surface((text_surface.get_width(), text_surface.get_height()))
+    background_surface.fill(text_bg)
+    screen.blit(background_surface, (10, 40))
+    screen.blit(text_surface, (10, 40))
 
 def draw_timer(time_passed):
-    text = font.render("Time: " + str(time_passed), True, BLACK)
-    screen.blit(text, (WIDTH // 2 - 50, 10))
+    text_surface = font.render("Time: " + str(time_passed), True, text_color)
+    background_surface = pygame.Surface((text_surface.get_width(), text_surface.get_height()))
+    background_surface.fill(text_bg)
+    screen.blit(background_surface, (WIDTH // 2 - 50, 10))
+    screen.blit(text_surface, (WIDTH // 2 - 50, 10))
 
 def draw_overlay():
     # Create a semi-transparent overlay
@@ -131,10 +147,10 @@ def draw_overlay():
     return overlay
 
 def draw_menu():
-    global version, menu_bg_image
-    title_text = menu_font.render("Sherman Dining: The Game", True, BLACK)
-    start_text = font.render("Start Game", True, BLACK)
-    quit_text = font.render("Quit", True, BLACK)
+    global version, menu_bg_image, text_color, text_bg
+    title_text = menu_font.render("Sherman Dining: The Game", True, text_color)
+    start_text = font.render("Start Game", True, text_color)
+    quit_text = font.render("Quit", True, text_color)
 
     # Versioning text
     version_text = font.render(version, True, BLACK)
@@ -151,11 +167,22 @@ def draw_menu():
     # Draw the overlay on top of the background
     screen.blit(draw_overlay(), (0, 0))
 
+    # Draw title text with background
+    title_bg_rect = pygame.Rect(WIDTH // 2 - title_text.get_width() // 2 - 10, 90, title_text.get_width() + 20, title_text.get_height() + 10)
+    pygame.draw.rect(screen, text_bg, title_bg_rect)
     screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, 100))
-    screen.blit(start_text, (WIDTH // 2 - start_text.get_width() // 2, 300))
-    screen.blit(quit_text, (WIDTH // 2 - quit_text.get_width() // 2, 400))
-    screen.blit(version_text, (version_text_x, version_text_y))
 
+    # Draw start game text with background
+    start_bg_rect = pygame.Rect(WIDTH // 2 - start_text.get_width() // 2 - 10, 290, start_text.get_width() + 20, start_text.get_height() + 10)
+    pygame.draw.rect(screen, text_bg, start_bg_rect)
+    screen.blit(start_text, (WIDTH // 2 - start_text.get_width() // 2, 300))
+
+    # Draw quit text with background
+    quit_bg_rect = pygame.Rect(WIDTH // 2 - quit_text.get_width() // 2 - 10, 390, quit_text.get_width() + 20, quit_text.get_height() + 10)
+    pygame.draw.rect(screen, text_bg, quit_bg_rect)
+    screen.blit(quit_text, (WIDTH // 2 - quit_text.get_width() // 2, 400))
+
+    screen.blit(version_text, (version_text_x, version_text_y))
 
     pygame.display.update()
 
@@ -178,7 +205,7 @@ def draw_menu():
 def draw_game_over(score, time_passed):
     game_over_text = menu_font.render("You got food poisoning!", True, BLACK)
     try_again_text = font.render("Try Again", True, BLACK)
-    quit_text = font.render("Quit", True, BLACK)
+    quit_text = font.render("Quit to Menu", True, BLACK)
     score_text = font.render("Score: " + str(score), True, BLACK)
     high_score_text = font.render("High Score: " + str(high_score), True, BLACK)
     time_text = font.render("Time: " + str(time_passed), True, BLACK)
@@ -197,14 +224,37 @@ def draw_game_over(score, time_passed):
     score_y = game_over_y + vertical_spacing
     high_score_y = score_y + vertical_spacing
     time_y = high_score_y + vertical_spacing
-    try_again_y = time_y + 2 * vertical_spacing  # Increase vertical spacing for "Try Again" button
-    quit_y = try_again_y + 2 * vertical_spacing  # Increase vertical spacing even further for "Quit" button
+    try_again_y = time_y + 2 * vertical_spacing  
+    quit_y = try_again_y + 2 * vertical_spacing 
 
+    game_over_bg = pygame.Surface((game_over_text.get_width(), game_over_text.get_height()))
+    game_over_bg.fill(text_bg)
+    screen.blit(game_over_bg, (game_over_x, game_over_y))
     screen.blit(game_over_text, (game_over_x, game_over_y))
+
+    score_bg = pygame.Surface((score_text.get_width(), score_text.get_height()))
+    score_bg.fill(text_bg)
+    screen.blit(score_bg, (score_x, score_y))
     screen.blit(score_text, (score_x, score_y))
+
+    high_score_bg = pygame.Surface((high_score_text.get_width(), high_score_text.get_height()))
+    high_score_bg.fill(text_bg)
+    screen.blit(high_score_bg, (high_score_x, high_score_y))
     screen.blit(high_score_text, (high_score_x, high_score_y))
+
+    time_bg = pygame.Surface((time_text.get_width(), time_text.get_height()))
+    time_bg.fill(text_bg)
+    screen.blit(time_bg, (time_x, time_y))
     screen.blit(time_text, (time_x, time_y))
+
+    try_again_bg = pygame.Surface((try_again_text.get_width(), try_again_text.get_height()))
+    try_again_bg.fill(text_bg)
+    screen.blit(try_again_bg, (try_again_x, try_again_y))
     screen.blit(try_again_text, (try_again_x, try_again_y))
+
+    quit_bg = pygame.Surface((quit_text.get_width(), quit_text.get_height()))
+    quit_bg.fill(text_bg)
+    screen.blit(quit_bg, (quit_x, quit_y))
     screen.blit(quit_text, (quit_x, quit_y))
 
     pygame.display.update()
@@ -219,8 +269,7 @@ def draw_game_over(score, time_passed):
                 if try_again_y <= y <= try_again_y + try_again_text.get_height():  
                     return True
                 elif quit_y <= y <= quit_y + quit_text.get_height():  
-                    pygame.quit()
-                    sys.exit()
+                    return False
 
 def draw_pause_menu(background, food_list):
     global lives, player_x, player_y
@@ -246,9 +295,18 @@ def draw_pause_menu(background, food_list):
     draw_lives(lives)
 
     # Draw the pause menu on top
-    pause_text = menu_font.render("Paused", True, BLACK)
-    resume_text = font.render("Resume", True, BLACK)
-    quit_text = font.render("Quit to Menu", True, BLACK)
+    pause_text = menu_font.render("Paused", True, text_color)
+    resume_text = font.render("Resume", True, text_color)
+    quit_text = font.render("Quit to Menu", True, text_color)
+
+    # Draw background for the text
+    pause_bg_rect = pygame.Rect(WIDTH // 2 - pause_text.get_width() // 2 - 10, 100, pause_text.get_width() + 20, pause_text.get_height() + 10)
+    resume_bg_rect = pygame.Rect(WIDTH // 2 - resume_text.get_width() // 2 - 10, 200, resume_text.get_width() + 20, resume_text.get_height() + 10)
+    quit_bg_rect = pygame.Rect(WIDTH // 2 - quit_text.get_width() // 2 - 10, 300, quit_text.get_width() + 20, quit_text.get_height() + 10)
+
+    pygame.draw.rect(screen, text_bg, pause_bg_rect)
+    pygame.draw.rect(screen, text_bg, resume_bg_rect)
+    pygame.draw.rect(screen, text_bg, quit_bg_rect)
 
     screen.blit(pause_text, (WIDTH // 2 - pause_text.get_width() // 2, 100))
     screen.blit(resume_text, (WIDTH // 2 - resume_text.get_width() // 2, 200))
@@ -320,6 +378,8 @@ def main():
         if not draw_menu():
             break
 
+        reset_game_state()
+
         player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
 
         clock = pygame.time.Clock()
@@ -358,8 +418,7 @@ def main():
 
             if paused:
                 if not draw_pause_menu(background, food_list):  # Check if game should resume
-                    running = False  # If draw_pause_menu returns False, break out of the game loop
-                    reset_game_state()
+                    running = False  
                 else:
                     paused = False  # Resume the game if draw_pause_menu returns True
             
@@ -402,6 +461,8 @@ def main():
                         elapsed_time = (current_time - start_time) // 1000  # Calculate elapsed time in seconds
                         if game_over(score, elapsed_time):
                             break
+                        else:
+                            running = False
 
                     if score % 10 == 0:
                         next_level()
