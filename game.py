@@ -2,7 +2,7 @@ import pygame
 import random
 import sys
 
-version = "1.2.2"
+version = "1.2.3"
 
 # Initialize Pygame
 pygame.init()
@@ -35,8 +35,8 @@ player_image = pygame.transform.scale(pygame.image.load("assets/images/plate.png
 player_speed = 15
 
 # Food
-food_width = 80  # Increase the size of food
-food_height = 80  # Increase the size of food
+food_width = 80  
+food_height = 80  
 food_speed = 4
 food_limit = 8
 food_generate_delay = 60  # Delay between generating each food item
@@ -75,7 +75,7 @@ game_bg_image = pygame.image.load("assets/images/sherman.jpg")
 # Background Music
 background_music = "assets/sounds/spiderman_game_pizza_theme.mp3"
 pygame.mixer.music.load(background_music)
-pygame.mixer.music.set_volume(0.1)  # Adjust volume if needed
+pygame.mixer.music.set_volume(0.1) 
 
 # Game Variables
 score = 0
@@ -142,8 +142,8 @@ def draw_timer(time_passed):
 def draw_overlay():
     # Create a semi-transparent overlay
     overlay = pygame.Surface((WIDTH, HEIGHT))
-    overlay.set_alpha(150)  # Adjust the transparency level as needed
-    overlay.fill(WHITE)  # Fill the overlay with a white color
+    overlay.set_alpha(150)  
+    overlay.fill(WHITE) 
     return overlay
 
 def draw_menu():
@@ -155,7 +155,7 @@ def draw_menu():
     # Versioning text
     version_text = font.render(version, True, BLACK)
     version_text_x = WIDTH // 2 - version_text.get_width() // 2
-    version_text_y = HEIGHT - 50  # Adjust this value to change the vertical position
+    version_text_y = HEIGHT - 50 
 
     # Load background image
     background = menu_bg_image
@@ -426,9 +426,9 @@ def main():
             if not paused:
                 # Move player
                 keys = pygame.key.get_pressed()
-                if keys[pygame.K_LEFT] and player_x > 0:
+                if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and player_x > 0:
                     player_x -= player_speed
-                if keys[pygame.K_RIGHT] and player_x < WIDTH - player_width:
+                if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and player_x < WIDTH - player_width:
                     player_x += player_speed
                 
                 # Update player's rectangle
@@ -446,9 +446,12 @@ def main():
                 draw_food(food['x'], food['y'], food)
                 food['y'] += food_speed
 
-                # Check collision with player
-                food_rect = pygame.Rect(food['x'], food['y'], food_width, food_height)
-                if food_rect.colliderect(player_rect):
+                # Load the masks for player and food images
+                player_mask = pygame.mask.from_surface(player_image)
+                food_mask = pygame.mask.from_surface(food['image'])
+
+                # Check collision using masks
+                if player_mask.overlap(food_mask, (food['x'] - player_x, food['y'] - player_y)):
                     if food['is_good']:
                         score += 5
                         good_food_sound.play()
