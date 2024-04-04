@@ -1,0 +1,21 @@
+===========================
+Controls:
+---------------------------
+
+Moving Left and Right:
+
+(W Key and D Key) or (Left Arrow Key and Right Arrow Key)
+
+---------------------------
+Pause:
+
+(ESC Key) or (P Key)
+===========================
+
+Goal:
+
+Don't get food poisoning! Avoid the dubious green food!
+
+===========================
+
+Thanks for playing!
