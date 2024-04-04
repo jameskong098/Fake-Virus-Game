@@ -48,10 +48,18 @@ good_food_images = [
 ]
 bad_food_image = pygame.transform.scale(pygame.image.load("assets/images/dubious_food.png"), (food_width, food_height))  # Scale the image
 good_food_sound = pygame.mixer.Sound("assets/sounds/yum_roblox_turkey_leg.mp3")
+good_food_sound.set_volume(0.5)
 bad_food_sound = pygame.mixer.Sound("assets/sounds/vine_boom.mp3")
+bad_food_sound.set_volume(0.3)
+
+# Background Music
+background_music = "assets/sounds/spiderman_game_pizza_theme.mp3"
+pygame.mixer.music.load(background_music)
+pygame.mixer.music.set_volume(0.1)  # Adjust volume if needed
 
 # Game Variables
 score = 0
+lives = 3
 start_time = pygame.time.get_ticks()
 food_list = []
 food_positions = [] 
@@ -65,6 +73,10 @@ def draw_food(x, y, food):
 def draw_score(score):
     text = font.render("Score: " + str(score), True, BLACK)
     screen.blit(text, (10, 10))
+
+def draw_lives(lives):
+    text = font.render("Lives: " + str(lives), True, BLACK)
+    screen.blit(text, (10, 40))
 
 def draw_timer(time_passed):
     text = font.render("Time: " + str(time_passed), True, BLACK)
@@ -81,6 +93,11 @@ def draw_menu():
     title_text = menu_font.render("Sherman Dining: The Game", True, BLACK)
     start_text = font.render("Start Game", True, BLACK)
     quit_text = font.render("Quit", True, BLACK)
+
+    # Versioning text
+    version_text = font.render("Version 1.1", True, BLACK)
+    version_text_x = WIDTH // 2 - version_text.get_width() // 2
+    version_text_y = HEIGHT - 50  # Adjust this value to change the vertical position
 
     # Load background image
     background = pygame.image.load("assets/images/brandeis_dining.jpg")
@@ -100,8 +117,12 @@ def draw_menu():
     screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, 100))
     screen.blit(start_text, (WIDTH // 2 - start_text.get_width() // 2, 200))
     screen.blit(quit_text, (WIDTH // 2 - quit_text.get_width() // 2, 250))
+    screen.blit(version_text, (version_text_x, version_text_y))
 
     pygame.display.update()
+
+    # Start playing background music
+    pygame.mixer.music.play(loops=-1)  # Set loops to -1 to loop indefinitely
 
     while True:
         for event in pygame.event.get():
@@ -116,14 +137,34 @@ def draw_menu():
                     pygame.quit()
                     sys.exit()
 
-def draw_game_over(background, player_x, player_y, food_list):
+def draw_game_over(background, player_x, player_y, food_list, score, time_passed):
     game_over_text = menu_font.render("You got food poisoning!", True, BLACK)
     try_again_text = font.render("Try Again", True, BLACK)
     quit_text = font.render("Quit", True, BLACK)
+    score_text = font.render("Score: " + str(score), True, BLACK)
+    time_text = font.render("Time: " + str(time_passed), True, BLACK)
 
-    screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, 100))
-    screen.blit(try_again_text, (WIDTH // 2 - try_again_text.get_width() // 2, 200))
-    screen.blit(quit_text, (WIDTH // 2 - quit_text.get_width() // 2, 250))
+    # Calculate positions for the text
+    game_over_x = WIDTH // 2 - game_over_text.get_width() // 2
+    try_again_x = WIDTH // 2 - try_again_text.get_width() // 2
+    quit_x = WIDTH // 2 - quit_text.get_width() // 2
+
+    score_x = WIDTH // 2 - score_text.get_width() // 2
+    time_x = WIDTH // 2 - time_text.get_width() // 2
+
+    # Set vertical positions
+    vertical_spacing = 50
+    game_over_y = 100
+    score_y = game_over_y + vertical_spacing
+    time_y = score_y + vertical_spacing
+    try_again_y = time_y + vertical_spacing
+    quit_y = try_again_y + vertical_spacing
+
+    screen.blit(game_over_text, (game_over_x, game_over_y))
+    screen.blit(score_text, (score_x, score_y))
+    screen.blit(time_text, (time_x, time_y))
+    screen.blit(try_again_text, (try_again_x, try_again_y))
+    screen.blit(quit_text, (quit_x, quit_y))
 
     pygame.display.update()
 
@@ -204,11 +245,11 @@ def generate_food():
         return {'x': x, 'y': y, 'image': bad_food_image, 'is_good': False}
 
 
-def game_over(background, player_x, player_y, food_list):
-    global score, level, start_time
+def game_over(background, player_x, player_y, food_list, score, elapsed_time):
+    global level, start_time
 
     while True:
-        if draw_game_over(background, player_x, player_y, food_list):
+        if draw_game_over(background, player_x, player_y, food_list, score, elapsed_time):
             reset_game_state()
             return True
         else:
@@ -231,7 +272,7 @@ def reset_game_state():
 
 
 def main():
-    global score, start_time, level, food_speed, food_list, food_limit
+    global score, start_time, level, food_speed, food_list, food_limit, lives
 
     while True:
         if not draw_menu():
@@ -309,11 +350,13 @@ def main():
                         score += 5
                         good_food_sound.play()
                     else:
-                        score -= 7
+                        lives -= 1
                         bad_food_sound.play()
 
-                    if score < 0:
-                        if game_over(background, player_x, player_y, food_list):
+                    if lives == 0:
+                        current_time = pygame.time.get_ticks()  # Get current time
+                        elapsed_time = (current_time - start_time) // 1000  # Calculate elapsed time in seconds
+                        if game_over(background, player_x, player_y, food_list, score, elapsed_time):
                             break
 
                     if score >= 10:
@@ -325,8 +368,9 @@ def main():
                 if food['y'] > HEIGHT:
                     food_list.remove(food)
 
-            # Draw score, level, and timer
+            # Draw score, lives, and timer
             draw_score(score)
+            draw_lives(lives)
 
             # Draw timer
             if not paused:  # Update timer only when the game is not paused
