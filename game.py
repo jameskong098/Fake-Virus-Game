@@ -2,7 +2,7 @@ import pygame
 import random
 import sys
 
-version = "1.2.0"
+version = "1.2.1"
 
 # Initialize Pygame
 pygame.init()
@@ -25,6 +25,8 @@ menu_font = pygame.font.SysFont(None, 40)
 # Player
 player_width = 90
 player_height = 90
+player_x = WIDTH // 2 - player_width // 2
+player_y = HEIGHT - 120
 player_image = pygame.transform.scale(pygame.image.load("assets/images/plate.png"), (player_width, player_height)) 
 player_speed = 15
 
@@ -150,9 +152,10 @@ def draw_menu():
     screen.blit(draw_overlay(), (0, 0))
 
     screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, 100))
-    screen.blit(start_text, (WIDTH // 2 - start_text.get_width() // 2, 200))
-    screen.blit(quit_text, (WIDTH // 2 - quit_text.get_width() // 2, 250))
+    screen.blit(start_text, (WIDTH // 2 - start_text.get_width() // 2, 300))
+    screen.blit(quit_text, (WIDTH // 2 - quit_text.get_width() // 2, 400))
     screen.blit(version_text, (version_text_x, version_text_y))
+
 
     pygame.display.update()
 
@@ -166,9 +169,9 @@ def draw_menu():
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                if 200 <= y <= 250:
+                if 300 <= y <= 350: # Start Game Button
                     return True
-                elif 250 <= y <= 300:
+                elif 400 <= y <= 450: # Quit Game Button
                     pygame.quit()
                     sys.exit()
 
@@ -180,7 +183,7 @@ def draw_game_over(score, time_passed):
     high_score_text = font.render("High Score: " + str(high_score), True, BLACK)
     time_text = font.render("Time: " + str(time_passed), True, BLACK)
 
-    # Calculate positions for the text
+     # Calculate positions for the text
     game_over_x = WIDTH // 2 - game_over_text.get_width() // 2
     try_again_x = WIDTH // 2 - try_again_text.get_width() // 2
     quit_x = WIDTH // 2 - quit_text.get_width() // 2
@@ -194,8 +197,8 @@ def draw_game_over(score, time_passed):
     score_y = game_over_y + vertical_spacing
     high_score_y = score_y + vertical_spacing
     time_y = high_score_y + vertical_spacing
-    try_again_y = time_y + vertical_spacing
-    quit_y = try_again_y + vertical_spacing
+    try_again_y = time_y + 2 * vertical_spacing  # Increase vertical spacing for "Try Again" button
+    quit_y = try_again_y + 2 * vertical_spacing  # Increase vertical spacing even further for "Quit" button
 
     screen.blit(game_over_text, (game_over_x, game_over_y))
     screen.blit(score_text, (score_x, score_y))
@@ -203,7 +206,6 @@ def draw_game_over(score, time_passed):
     screen.blit(time_text, (time_x, time_y))
     screen.blit(try_again_text, (try_again_x, try_again_y))
     screen.blit(quit_text, (quit_x, quit_y))
-
 
     pygame.display.update()
 
@@ -214,13 +216,15 @@ def draw_game_over(score, time_passed):
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                if 200 <= y <= 250:
+                if try_again_y <= y <= try_again_y + try_again_text.get_height():  
                     return True
-                elif 250 <= y <= 300:
+                elif quit_y <= y <= quit_y + quit_text.get_height():  
                     pygame.quit()
                     sys.exit()
 
-def draw_pause_menu(background, player_x, player_y, food_list):
+def draw_pause_menu(background, food_list):
+    global lives, player_x, player_y
+
     # Redraw background so that pause menu os on top
     screen.blit(background, (0, 0))
 
@@ -238,6 +242,8 @@ def draw_pause_menu(background, player_x, player_y, food_list):
     draw_score(score)
     time_passed = (pygame.time.get_ticks() - start_time) // 1000
     draw_timer(time_passed)
+    draw_high_score()
+    draw_lives(lives)
 
     # Draw the pause menu on top
     pause_text = menu_font.render("Paused", True, BLACK)
@@ -246,7 +252,7 @@ def draw_pause_menu(background, player_x, player_y, food_list):
 
     screen.blit(pause_text, (WIDTH // 2 - pause_text.get_width() // 2, 100))
     screen.blit(resume_text, (WIDTH // 2 - resume_text.get_width() // 2, 200))
-    screen.blit(quit_text, (WIDTH // 2 - quit_text.get_width() // 2, 250))
+    screen.blit(quit_text, (WIDTH // 2 - quit_text.get_width() // 2, 300))  
 
     pygame.display.update()
 
@@ -256,13 +262,13 @@ def draw_pause_menu(background, player_x, player_y, food_list):
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
+                if event.key == pygame.K_p or event.key == pygame.K_ESCAPE:
                     return True
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 if 200 <= y <= 250:  # Resume
                     return True
-                elif 250 <= y <= 300:  # Quit to menu
+                elif 300 <= y <= 350:  # Quit to menu
                     return False
 
 
@@ -299,29 +305,22 @@ def next_level():
     food_speed += 0.1
 
 def reset_game_state():
-    global score, start_time, player_x, player_y, food_list
+    global score, start_time, player_x, player_y, food_list, lives
     score = 0
     start_time = pygame.time.get_ticks()
-    # Reset player position
-    player_x = WIDTH // 2 - player_width // 2
-    player_y = HEIGHT - 120
-    # Reset food list
+    player_x = WIDTH // 2 - player_width // 2  
+    player_y = HEIGHT - 120  
     food_list = []
-
+    lives = 3
 
 def main():
-    global score, start_time, level, food_speed, food_list, food_limit, lives, game_bg_image
+    global score, start_time, player_x, player_y, level, food_speed, food_list, food_limit, lives, game_bg_image
 
     while True:
         if not draw_menu():
             break
 
-        reset_game_state()  # Reset game state
-
-        player_x = WIDTH // 2 - player_width // 2
-        player_y = HEIGHT - 120 
         player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
-        player_velocity = [0, 0]  # Store player velocity when paused
 
         clock = pygame.time.Clock()
         running = True
@@ -330,6 +329,9 @@ def main():
         # Load background image
         background = game_bg_image
         background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
+        # Reset start time when the game starts
+        start_time = pygame.time.get_ticks()
 
         while running:
             # Draw background
@@ -344,7 +346,7 @@ def main():
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_p:
+                    if event.key == pygame.K_p or event.key == pygame.K_ESCAPE:  # Pause/Unpause on "P" or "Esc" key
                         if paused:
                             # Unpause the game
                             paused = False
@@ -355,8 +357,12 @@ def main():
                             paused = True
 
             if paused:
-                paused = not draw_pause_menu(background, player_x, player_y, food_list)  # Check if game should resume
-                continue
+                if not draw_pause_menu(background, food_list):  # Check if game should resume
+                    running = False  # If draw_pause_menu returns False, break out of the game loop
+                    reset_game_state()
+                else:
+                    paused = False  # Resume the game if draw_pause_menu returns True
+            
             
             if not paused:
                 # Move player
@@ -418,7 +424,6 @@ def main():
                 current_time = pygame.time.get_ticks()  # Get current time
                 elapsed_time = (current_time - start_time) // 1000  # Calculate elapsed time in seconds
                 draw_timer(elapsed_time)
-
 
             pygame.display.update()
             clock.tick(60)
