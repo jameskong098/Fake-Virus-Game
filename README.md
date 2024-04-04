@@ -23,15 +23,9 @@ Welcome to Sherman Dining: The Game! This repository contains the source code fo
 1. Clone this repository to your local machine.
 2. Install Python (if not already installed).
 3. Install Pygame library by running `pip install pygame` in your terminal.
-4. Navigate to the cloned directory and run `python main.py` to start the game.
+4. Navigate to the cloned directory and run `python game.py` to start the game.
 5. Use the left and right arrow keys to move your plate and catch food items.
 6. Enjoy the game!
-
-## Credits
-
-- Game assets: Sprites and sounds are sourced from various online platforms.
-- Background image: Courtesy of Brandeis Dining Services.
-- Background music: "Spiderman Game Pizza Theme" from unknown source.
 
 ## Contributors
 
