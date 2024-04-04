@@ -35,8 +35,8 @@ Welcome to Sherman Dining: The Game! This repository contains the source code fo
 
 ## Contributors
 
-- James Kong
-- Eric Hurchey
+Game Programmer: James D. Kong
+"Virus" Scripter: Eric Hurchey
 
 ## License
 

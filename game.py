@@ -2,7 +2,7 @@ import pygame
 import random
 import sys
 
-version = "v1.2.5"
+version = "v1.3.5"
 
 # Initialize Pygame
 pygame.init()
@@ -18,11 +18,13 @@ pygame.display.set_icon(icon_image)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
 # Fonts
-font = pygame.font.SysFont(None, 30)
-menu_font = pygame.font.SysFont(None, 40)
+comic_sans_font = "assets/COMICSANS.ttf" 
+font = pygame.font.Font(comic_sans_font, 30)
+menu_font = pygame.font.Font(comic_sans_font, 40)
 text_color = BLACK
 text_bg = WHITE
 
@@ -126,17 +128,17 @@ def draw_food(x, y, food):
 
 def draw_score(score):
     text_surface = font.render("Score: " + str(score), True, text_color)
-    background_surface = pygame.Surface((text_surface.get_width(), text_surface.get_height()))
+    background_surface = pygame.Surface((text_surface.get_width() + 15, text_surface.get_height() + 15))
     background_surface.fill(text_bg)
     screen.blit(background_surface, (10, 10))
-    screen.blit(text_surface, (10, 10))
+    screen.blit(text_surface, (15, 15))  
 
 def draw_lives(lives):
     text_surface = font.render("Lives: " + str(lives), True, text_color)
-    background_surface = pygame.Surface((text_surface.get_width(), text_surface.get_height()))
+    background_surface = pygame.Surface((text_surface.get_width() + 25, text_surface.get_height() + 15))
     background_surface.fill(text_bg)
-    screen.blit(background_surface, (10, 40))
-    screen.blit(text_surface, (10, 40))
+    screen.blit(background_surface, (10, 50)) 
+    screen.blit(text_surface, (15, 55))  
 
 def draw_timer(time_passed):
     text_surface = font.render("Time: " + str(time_passed), True, text_color)
@@ -157,6 +159,7 @@ def draw_menu():
     title_text = menu_font.render("Sherman Dining: The Game", True, text_color)
     start_text = font.render("Start Game", True, text_color)
     quit_text = font.render("Quit", True, text_color)
+    credits_text = font.render("Credits", True, text_color)
 
     # Versioning text
     version_text = font.render(version, True, BLACK)
@@ -196,12 +199,20 @@ def draw_menu():
     pygame.draw.rect(screen, text_bg, version_bg_rect)
     screen.blit(version_text, (version_text_x, version_text_y))
 
+    # Draw credits text with background
+    credits_bg_rect = pygame.Rect(WIDTH // 2 - credits_text.get_width() // 2 - 10, 490, credits_text.get_width() + 20, credits_text.get_height() + 10)
+    pygame.draw.rect(screen, text_bg, credits_bg_rect)
+    screen.blit(credits_text, (WIDTH // 2 - credits_text.get_width() // 2, 500))
+
     screen.blit(version_text, (version_text_x, version_text_y))
 
     pygame.display.update()
 
     # Start playing background music
     pygame.mixer.music.play(loops=-1)  # Set loops to -1 to loop indefinitely
+
+    # Add a variable to track whether the user is viewing credits
+    viewing_credits = False
 
     while True:
         for event in pygame.event.get():
@@ -211,10 +222,67 @@ def draw_menu():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 if 290 <= y <= 340 and WIDTH // 2 - start_text.get_width() // 2 - 10 <= x <= WIDTH // 2 + start_text.get_width() // 2 + 10: # Start Game Button
-                    return True
+                    return True, viewing_credits  # Return True to start the game and False for viewing credits
                 elif 390 <= y <= 440 and WIDTH // 2 - quit_text.get_width() // 2 - 10 <= x <= WIDTH // 2 + quit_text.get_width() // 2 + 10: # Quit Game Button
                     pygame.quit()
                     sys.exit()
+                elif 490 <= y <= 540 and WIDTH // 2 - credits_text.get_width() // 2 - 10 <= x <= WIDTH // 2 + credits_text.get_width() // 2 + 10: # Credits Button
+                    viewing_credits = True  # Set the flag to indicate that the user is viewing credits
+                    return False, viewing_credits
+
+def display_credits():
+    # Display credits for programmers
+    credits_text = menu_font.render("Game Programmer: James D. Kong", True, text_color)
+    credits_text2 = menu_font.render("\"Virus\" Scripter: Eric Hurchey", True, text_color)
+    credits_text3 = menu_font.render("Spring 2024", True, text_color)
+    credits_text4 = menu_font.render("GitHub Repository", True, BLUE)  # Change color to BLUE for link
+    return_to_menu_text = menu_font.render("Return to Menu", True, text_color)  # Add return to menu button
+
+    # Position credits text to cover the entire screen
+    screen.blit(pygame.transform.scale(menu_bg_image, (WIDTH, HEIGHT)), (0, 0))
+
+    # Make the menu background image more opaque
+    overlay_surface = pygame.Surface((WIDTH, HEIGHT))
+    overlay_surface.set_alpha(60)  # Set opacity (0-255)
+    overlay_surface.fill((255, 255, 255))  # Fill with white (you can use any color)
+    screen.blit(overlay_surface, (0, 0))
+
+    # Calculate positions for the text
+    credits_text_x = WIDTH // 2 - credits_text.get_width() // 2
+    credits_text_y = HEIGHT // 2 - credits_text.get_height() // 2
+    credits_text2_x = WIDTH // 2 - credits_text2.get_width() // 2
+    credits_text2_y = credits_text_y + credits_text.get_height() + 10
+    credits_text3_x = WIDTH // 2 - credits_text3.get_width() // 2
+    credits_text3_y = credits_text2_y + credits_text2.get_height() + 10
+    credits_text4_x = WIDTH // 2 - credits_text4.get_width() // 2
+    credits_text4_y = credits_text3_y + credits_text3.get_height() + 10
+    return_to_menu_text_x = WIDTH // 2 - return_to_menu_text.get_width() // 2
+    return_to_menu_text_y = credits_text4_y + credits_text4.get_height() + 50  # Move button lower
+
+    # Draw white background behind text
+    credits_bg = pygame.Surface((WIDTH, credits_text.get_height() * 4 + 150))  # Increase height for button spacing
+    credits_bg.fill(WHITE)
+    screen.blit(credits_bg, (0, HEIGHT // 2 - credits_text.get_height() // 2))
+
+    screen.blit(credits_text, (credits_text_x, credits_text_y))
+    screen.blit(credits_text2, (credits_text2_x, credits_text2_y))
+    screen.blit(credits_text3, (credits_text3_x, credits_text3_y))
+    screen.blit(credits_text4, (credits_text4_x, credits_text4_y))
+    screen.blit(return_to_menu_text, (return_to_menu_text_x, return_to_menu_text_y))
+    pygame.display.update()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                if credits_text4_x <= x <= credits_text4_x + credits_text4.get_width() and credits_text4_y <= y <= credits_text4_y + credits_text4.get_height():
+                    import webbrowser
+                    webbrowser.open("https://github.com/jameskong098/Fake-Virus-Game")
+                elif return_to_menu_text_x <= x <= return_to_menu_text_x + return_to_menu_text.get_width() and return_to_menu_text_y <= y <= return_to_menu_text_y + return_to_menu_text.get_height():
+                    return True  # Return True after processing the "Return to Menu" button click
 
 def draw_game_over(score, time_passed):
     game_over_text = menu_font.render("You got food poisoning!", True, BLACK)
@@ -392,118 +460,123 @@ def main():
     global score, start_time, player_x, player_y, food_speed, food_list, food_limit, lives, game_bg_image
 
     while True:
-        if not draw_menu():
-            break
+        start_game, viewing_credits = draw_menu()  # Store the user's menu choice and credits view flag
+        if not start_game: 
+            if viewing_credits:  # Check if the user was viewing credits
+                # Display credits and return to the main menu
+                display_credits()
+            else:
+                break  # Exit the main loop if the user chose to quit
+        else:  # If the user chose to start the game from the menu
+            reset_game_state()
 
-        reset_game_state()
+            player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
 
-        player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
+            clock = pygame.time.Clock()
+            running = True
+            paused = False
 
-        clock = pygame.time.Clock()
-        running = True
-        paused = False
+            # Load background image
+            background = game_bg_image
+            background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
-        # Load background image
-        background = game_bg_image
-        background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+            # Reset start time when the game starts
+            start_time = pygame.time.get_ticks()
 
-        # Reset start time when the game starts
-        start_time = pygame.time.get_ticks()
+            while running:
+                # Draw background
+                screen.blit(background, (0, 0))
 
-        while running:
-            # Draw background
-            screen.blit(background, (0, 0))
+                # Draw the overlay on top of the background
+                screen.blit(draw_overlay(), (0, 0))
 
-            # Draw the overlay on top of the background
-            screen.blit(draw_overlay(), (0, 0))
+                # Check events
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_p or event.key == pygame.K_ESCAPE:  # Pause/Unpause on "P" or "Esc" key
+                            if paused:
+                                # Unpause the game
+                                paused = False
+                            else:
+                                # Pause the game
+                                paused = True
 
-            # Check events
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_p or event.key == pygame.K_ESCAPE:  # Pause/Unpause on "P" or "Esc" key
-                        if paused:
-                            # Unpause the game
-                            paused = False
-                        else:
-                            # Pause the game
-                            paused = True
-
-            if paused:
-                if not draw_pause_menu(background, food_list):  # Check if game should resume
-                    running = False  
-                else:
-                    paused = False  # Resume the game if draw_pause_menu returns True
-            
-            
-            if not paused:
-                # Move player
-                keys = pygame.key.get_pressed()
-                if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and player_x > 0:
-                    player_x -= player_speed
-                if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and player_x < WIDTH - player_width:
-                    player_x += player_speed
-
-            # Generate food
-            if len(food_list) < food_limit and pygame.time.get_ticks() % food_generate_delay == 0:  # Limit the number of foods on screen
-                food_list.append(generate_food())
-
-            # Draw player
-            draw_player(player_x, player_y)
-
-            # Draw and move food
-            for food in food_list:
-                draw_food(food['x'], food['y'], food)
-                food['y'] += food_speed
-
-                # Load the masks for player and food images
-                player_mask = pygame.mask.from_surface(player_image)
-                food_mask = pygame.mask.from_surface(food['image'])
-
-                # Check collision using masks
-                if player_mask.overlap(food_mask, (food['x'] - player_x, food['y'] - player_y)):
-                    if food['is_good']:
-                        score += 5
-                        good_food_sound.play()
+                if paused:
+                    if not draw_pause_menu(background, food_list):  # Check if game should resume
+                        running = False  
                     else:
-                        lives -= 1
-                        bad_food_sound.play()
+                        paused = False  # Resume the game if draw_pause_menu returns True
+                
+                
+                if not paused:
+                    # Move player
+                    keys = pygame.key.get_pressed()
+                    if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and player_x > 0:
+                        player_x -= player_speed
+                    if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and player_x < WIDTH - player_width:
+                        player_x += player_speed
 
-                    if lives == 0:
-                        game_over_sound.play()
-                        current_time = pygame.time.get_ticks()  # Get current time
-                        elapsed_time = (current_time - start_time) // 1000  # Calculate elapsed time in seconds
-                        if game_over(score, elapsed_time):
-                            break
+                # Generate food
+                if len(food_list) < food_limit and pygame.time.get_ticks() % food_generate_delay == 0:  # Limit the number of foods on screen
+                    food_list.append(generate_food())
+
+                # Draw player
+                draw_player(player_x, player_y)
+
+                # Draw and move food
+                for food in food_list:
+                    draw_food(food['x'], food['y'], food)
+                    food['y'] += food_speed
+
+                    # Load the masks for player and food images
+                    player_mask = pygame.mask.from_surface(player_image)
+                    food_mask = pygame.mask.from_surface(food['image'])
+
+                    # Check collision using masks
+                    if player_mask.overlap(food_mask, (food['x'] - player_x, food['y'] - player_y)):
+                        if food['is_good']:
+                            score += 5
+                            good_food_sound.play()
                         else:
-                            running = False
+                            lives -= 1
+                            bad_food_sound.play()
 
-                    if score % 10 == 0:
-                        increase_difficulty()
-                    
-                    food_list.remove(food)
+                        if lives == 0:
+                            game_over_sound.play()
+                            current_time = pygame.time.get_ticks()  # Get current time
+                            elapsed_time = (current_time - start_time) // 1000  # Calculate elapsed time in seconds
+                            if game_over(score, elapsed_time):
+                                break
+                            else:
+                                running = False
 
-                # Remove food if it goes out of screen
-                if food['y'] > HEIGHT:
-                    food_list.remove(food)
+                        if score % 10 == 0:
+                            increase_difficulty()
+                        
+                        food_list.remove(food)
 
-            update_high_score(score)
+                    # Remove food if it goes out of screen
+                    if food['y'] > HEIGHT:
+                        food_list.remove(food)
 
-            # Draw score, lives, high score, and timer
-            draw_score(score)
-            draw_lives(lives)
-            draw_high_score()
+                update_high_score(score)
 
-            # Draw timer
-            if not paused:  # Update timer only when the game is not paused
-                current_time = pygame.time.get_ticks()  # Get current time
-                elapsed_time = (current_time - start_time) // 1000  # Calculate elapsed time in seconds
-                draw_timer(elapsed_time)
+                # Draw score, lives, high score, and timer
+                draw_score(score)
+                draw_lives(lives)
+                draw_high_score()
 
-            pygame.display.update()
-            clock.tick(60)
+                # Draw timer
+                if not paused:  # Update timer only when the game is not paused
+                    current_time = pygame.time.get_ticks()  # Get current time
+                    elapsed_time = (current_time - start_time) // 1000  # Calculate elapsed time in seconds
+                    draw_timer(elapsed_time)
+
+                pygame.display.update()
+                clock.tick(60)
 
 if __name__ == "__main__":
     main()
