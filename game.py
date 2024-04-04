@@ -2,7 +2,7 @@ import pygame
 import random
 import sys
 
-version = "v1.3.5"
+version = "v1.3.6"
 
 # Initialize Pygame
 pygame.init()
@@ -235,7 +235,7 @@ def display_credits():
     credits_text = menu_font.render("Game Programmer: James D. Kong", True, text_color)
     credits_text2 = menu_font.render("\"Virus\" Scripter: Eric Hurchey", True, text_color)
     credits_text3 = menu_font.render("Spring 2024", True, text_color)
-    credits_text4 = menu_font.render("GitHub Repository", True, BLUE)  # Change color to BLUE for link
+    credits_text4 = menu_font.render("GitHub Repository", True, BLUE) 
     return_to_menu_text = menu_font.render("Return to Menu", True, text_color)  # Add return to menu button
 
     # Position credits text to cover the entire screen
@@ -243,8 +243,8 @@ def display_credits():
 
     # Make the menu background image more opaque
     overlay_surface = pygame.Surface((WIDTH, HEIGHT))
-    overlay_surface.set_alpha(60)  # Set opacity (0-255)
-    overlay_surface.fill((255, 255, 255))  # Fill with white (you can use any color)
+    overlay_surface.set_alpha(60) 
+    overlay_surface.fill((255, 255, 255)) 
     screen.blit(overlay_surface, (0, 0))
 
     # Calculate positions for the text
@@ -292,7 +292,7 @@ def draw_game_over(score, time_passed):
     high_score_text = font.render("High Score: " + str(high_score), True, BLACK)
     time_text = font.render("Time: " + str(time_passed), True, BLACK)
 
-     # Calculate positions for the text
+    # Calculate positions for the text
     game_over_x = WIDTH // 2 - game_over_text.get_width() // 2
     try_again_x = WIDTH // 2 - try_again_text.get_width() // 2
     quit_x = WIDTH // 2 - quit_text.get_width() // 2
@@ -469,8 +469,6 @@ def main():
                 break  # Exit the main loop if the user chose to quit
         else:  # If the user chose to start the game from the menu
             reset_game_state()
-
-            player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
 
             clock = pygame.time.Clock()
             running = True
