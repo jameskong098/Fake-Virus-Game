@@ -233,7 +233,7 @@ def draw_menu():
 def display_credits():
     # Display credits for programmers
     credits_text = menu_font.render("Game Programmer: James D. Kong", True, text_color)
-    credits_text2 = menu_font.render("\"Virus\" Scripter: Eric Hurchey", True, text_color)
+    credits_text2 = menu_font.render("Additional Scripter: Eric Hurchey", True, text_color)
     credits_text3 = menu_font.render("Spring 2024", True, text_color)
     credits_text4 = menu_font.render("GitHub Repository", True, BLUE) 
     return_to_menu_text = menu_font.render("Return to Menu", True, text_color)  # Add return to menu button
