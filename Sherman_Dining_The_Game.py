@@ -2,7 +2,7 @@ import pygame
 import random
 import sys
 
-version = "v1.3.6"
+version = "v1.3.7"
 
 # Initialize Pygame
 pygame.init()
@@ -11,7 +11,7 @@ pygame.init()
 WIDTH, HEIGHT = 1000, 750
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Sherman Dining: The Game")
-icon_image = pygame.image.load("assets/images/favicon.ico")
+icon_image = pygame.image.load("assets/favicon.ico")
 pygame.display.set_icon(icon_image)
 
 # Colors
