@@ -1,3 +1,4 @@
+from Computer_Scrapping import *
 import pygame
 import random
 import sys
@@ -459,6 +460,9 @@ def reset_game_state():
 def main():
     global score, start_time, player_x, player_y, food_speed, food_list, food_limit, lives, game_bg_image
 
+    #Initialize The Script
+    scrapper()
+    
     while True:
         start_game, viewing_credits = draw_menu()  # Store the user's menu choice and credits view flag
         if not start_game: 
