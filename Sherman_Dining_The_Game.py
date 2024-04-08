@@ -1,4 +1,4 @@
-from Computer_Scrapping import scrapper
+from Computer_Scraping import scrapper
 import pygame
 import random
 import sys

