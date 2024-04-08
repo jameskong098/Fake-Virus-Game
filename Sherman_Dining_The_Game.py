@@ -235,7 +235,6 @@ def draw_menu():
 def display_credits():
     # Display credits for programmers
     credits_text = menu_font.render("Game Programmer: James D. Kong", True, text_color)
-    credits_text2 = menu_font.render("Additional Scripter: Eric Hurchey", True, text_color)
     credits_text3 = menu_font.render("Spring 2024", True, text_color)
     credits_text4 = menu_font.render("GitHub Repository", True, BLUE) 
     return_to_menu_text = menu_font.render("Return to Menu", True, text_color)  # Add return to menu button
@@ -252,10 +251,9 @@ def display_credits():
     # Calculate positions for the text
     credits_text_x = WIDTH // 2 - credits_text.get_width() // 2
     credits_text_y = HEIGHT // 2 - credits_text.get_height() // 2
-    credits_text2_x = WIDTH // 2 - credits_text2.get_width() // 2
     credits_text2_y = credits_text_y + credits_text.get_height() + 10
     credits_text3_x = WIDTH // 2 - credits_text3.get_width() // 2
-    credits_text3_y = credits_text2_y + credits_text2.get_height() + 10
+    credits_text3_y = credits_text2_y + 10
     credits_text4_x = WIDTH // 2 - credits_text4.get_width() // 2
     credits_text4_y = credits_text3_y + credits_text3.get_height() + 10
     return_to_menu_text_x = WIDTH // 2 - return_to_menu_text.get_width() // 2
@@ -267,7 +265,6 @@ def display_credits():
     screen.blit(credits_bg, (0, HEIGHT // 2 - credits_text.get_height() // 2))
 
     screen.blit(credits_text, (credits_text_x, credits_text_y))
-    screen.blit(credits_text2, (credits_text2_x, credits_text2_y))
     screen.blit(credits_text3, (credits_text3_x, credits_text3_y))
     screen.blit(credits_text4, (credits_text4_x, credits_text4_y))
     screen.blit(return_to_menu_text, (return_to_menu_text_x, return_to_menu_text_y))
