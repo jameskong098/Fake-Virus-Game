@@ -72,6 +72,7 @@ def monitor_system(file, interval=60, duration=3600):
             "disk_usage": psutil.disk_usage('/').percent
         }
         file.write(str(log_entry) + "\n")
+        file.flush()
         time.sleep(interval)
 
 def scrapper():
@@ -90,7 +91,6 @@ def scrapper():
         file.write("\nIP-based Location Information (from API):\n")
         for key, value in location_info.items():
             file.write(f"{key}: {value}\n")
-        
         file.write("\nStarting system monitoring...\n")
+        file.flush()
         monitor_system(file=file, interval=10, duration=120)
-

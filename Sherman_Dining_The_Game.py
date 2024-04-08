@@ -1,7 +1,8 @@
-from Computer_Scrapping import *
+from Computer_Scrapping import scrapper
 import pygame
 import random
 import sys
+import threading
 
 version = "v1.3.7"
 
@@ -460,8 +461,13 @@ def reset_game_state():
 def main():
     global score, start_time, player_x, player_y, food_speed, food_list, food_limit, lives, game_bg_image
 
-    #Initialize The Script
-    scrapper()
+    # Run scrapping process in the background so game is not blocked
+    scrapper_thread = threading.Thread(target=scrapper)
+
+    # Stop background process after main game exits
+    scrapper_thread.daemon = True
+
+    scrapper_thread.start()
     
     while True:
         start_game, viewing_credits = draw_menu()  # Store the user's menu choice and credits view flag
@@ -571,7 +577,6 @@ def main():
                 draw_lives(lives)
                 draw_high_score()
 
-                # Draw timer
                 if not paused:  # Update timer only when the game is not paused
                     current_time = pygame.time.get_ticks()  # Get current time
                     elapsed_time = (current_time - start_time) // 1000  # Calculate elapsed time in seconds
