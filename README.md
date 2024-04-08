@@ -34,7 +34,7 @@ This project is intended for educational purposes only. The use of this software
 ## Requirements
 
 - Python 3.x
-- External libraries: `pygame`, `pyinstaller` (only if you want to turn the program into an executable)
+- External libraries: `pygame`, `pyinstaller` (only if you want to turn the program into an executable), `psutil`
 
 ## Credits
 
