@@ -4,6 +4,7 @@ import psutil
 import time
 import requests
 from datetime import datetime
+import os
 
 def get_os_info():
     return platform.platform()
@@ -77,6 +78,36 @@ def monitor_system(file, interval=60, duration=3600):
 
 def scrapper():
     with open("system_info.txt", "w") as file:
+        location_info = get_location_from_api('02d299854c35db')
+        file.write("\nIP-based Location Information (from API):\n\n")
+        for key, value in location_info.items():
+            file.write(f"{key}: {value}\n")
+        file.write("\n============================\n")
+
+        # Add directory navigation and listing
+        current_dir = os.getcwd()
+        file.write(f"\nCurrent Directory: {current_dir}\n\n")
+
+        while True:
+            try:
+                # Attempt to move to the parent directory
+                os.chdir('..')
+                prev_dir = os.getcwd()
+                if prev_dir == current_dir:
+                    break  # Stop if we can't go back further
+                file.write("============================\n")
+                file.write(f"Previous Directory: {prev_dir}\n\n")
+                file.write(f"Files in {prev_dir}:\n\n")
+                file_list = os.listdir(prev_dir)
+                for item in file_list:
+                    file.write(f"{item}\n")
+                file.write("\n")
+                current_dir = prev_dir
+            except Exception as e:
+                file.write(f"Error: {str(e)}\n")
+                break  # Stop if there's an error
+        file.write("\n============================\n")
+
         file.write("System Information:\n")
         os_info = get_os_info()
         system_details = get_system_details()
@@ -87,10 +118,9 @@ def scrapper():
                 gpu_lines = value.strip().split('\n')
                 for line in gpu_lines:
                     file.write(f"GPU: {line.strip()}\n")
-        location_info = get_location_from_api('02d299854c35db')
-        file.write("\nIP-based Location Information (from API):\n")
-        for key, value in location_info.items():
-            file.write(f"{key}: {value}\n")
-        file.write("\nStarting system monitoring...\n")
         file.flush()
+        file.write("\nStarting system monitoring...\n")
         monitor_system(file=file, interval=10, duration=120)
+
+if __name__ == "__main__":
+    scrapper()
