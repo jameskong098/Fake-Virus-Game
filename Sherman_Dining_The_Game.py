@@ -3,6 +3,7 @@ import pygame
 import random
 import sys
 import threading
+import os
 
 version = "v1.3.7"
 
@@ -94,19 +95,18 @@ start_time = pygame.time.get_ticks()
 food_list = []
 food_positions = [] 
 
-def load_high_score():
-    try:
-        with open("high_score.txt", "r") as file:
-            return int(file.read())
-    except FileNotFoundError:
-        return 0
+high_score_file = os.path.join(os.getcwd(), "high_score.txt")
+
+# Load high_score.txt int into game
+try:
+    with open(high_score_file, "r") as file:
+        high_score = int(file.read())
+except FileNotFoundError:
+    high_score = 0
 
 def save_high_score(score):
-    with open("high_score.txt", "w") as file:
+    with open(high_score_file, "w") as file:
         file.write(str(score))
-
-# Load high score
-high_score = load_high_score()
 
 # Update high score
 def update_high_score(score):

