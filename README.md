@@ -2,6 +2,10 @@
 
 This project implements a trojan horse-style game where the game serves as the trojan horse, containing a hidden payload in the form of a computer scraping script. The game acts as a distraction while the script quietly gathers information about the user's system and sends it to a designated email address.
 
+## Disclaimer
+
+This project is intended for educational purposes only. The use of this software for malicious purposes is strictly prohibited. The developer assumes no responsibility for any misuse of this software.
+
 ## Features
 
 - **Game Interface:** The game provides an engaging interface to keep the user occupied.
@@ -37,10 +41,6 @@ max_attachment_size_mb = ""
 max_copy_amount = ""
 enable_debug_prints = ""
 ```
-
-## Disclaimer
-
-This project is intended for educational purposes only. The use of this software for malicious purposes is strictly prohibited. The developer assumes no responsibility for any misuse of this software.
 
 ## Requirements
 
