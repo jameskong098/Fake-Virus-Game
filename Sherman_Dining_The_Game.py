@@ -95,7 +95,13 @@ start_time = pygame.time.get_ticks()
 food_list = []
 food_positions = [] 
 
-high_score_file = os.path.join(os.getcwd(), "high_score.txt")
+# determine if application is a script file or frozen exe
+if getattr(sys, 'frozen', False):
+    application_dir = os.path.dirname(sys.executable)
+else:
+    application_dir = os.path.dirname(os.path.abspath(__file__))
+
+high_score_file = os.path.join(application_dir, "high_score.txt")
 
 # Load high_score.txt int into game
 try:
