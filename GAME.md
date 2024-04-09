@@ -1,6 +1,6 @@
 # Sherman Dining: The Game
 
-Welcome to Sherman Dining: The Game! This release contains the application/unix executable code and source code for a simple Pygame-based game where you control a plate to catch delicious food while avoiding bad ones at Sherman Dining Hall. However, be careful not to eat anything that might give you food poisoning! 
+Welcome to Sherman Dining: The Game!
 
 ## Gameplay
 
