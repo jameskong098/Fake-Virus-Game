@@ -4,7 +4,7 @@ This project implements a trojan horse-style game where the game serves as the t
 
 ## Disclaimer
 
-This project is intended for educational purposes only. The use of this software for malicious purposes is strictly prohibited. The developers assumes no responsibility for any misuse of this software.
+This project is intended for educational purposes only. The use of this software for malicious purposes is strictly prohibited. The developers assume no responsibility for any misuse of this software.
 
 ## Features
 
