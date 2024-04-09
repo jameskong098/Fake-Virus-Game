@@ -25,7 +25,18 @@ This project implements a trojan horse-style game where the game serves as the t
 
 ## Configuration
 
-- **Email Notification (Optional):** To enable email notification, set `enable_email` to `True` in the script and provide valid email configuration details including sender email, receiver email, password, SMTP server, and port.
+**.env file template:**
+```python
+enable_email = ""
+sender_email = ""
+receiver_email = ""
+password = ""
+smtp_server = ""
+smtp_port = ""
+max_attachment_size_mb = ""
+max_copy_amount = ""
+enable_debug_prints = ""
+```
 
 ## Disclaimer
 
