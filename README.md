@@ -40,6 +40,7 @@ smtp_port = ""
 max_attachment_size_mb = ""
 max_copy_amount = ""
 enable_debug_prints = ""
+enable_delete_generated_files = ""
 ```
 
 ## Requirements

