@@ -45,14 +45,14 @@ def get_system_details():
     
     if platform.system() == "Windows":
         try:
-            model = subprocess.check_output("wmic csproduct get name", universal_newlines=True)
+            model = subprocess.check_output("wmic csproduct get name", creationflags=subprocess.CREATE_NO_WINDOW, universal_newlines=True)
             details["computer_model"] = model.split("\n")[1].strip()
         except Exception as e:
             details["computer_model"] = "Unknown"
     
     elif platform.system() == "Darwin":
         try:
-            model = subprocess.check_output(["system_profiler", "SPHardwareDataType"], universal_newlines=True)
+            model = subprocess.check_output(["system_profiler", "SPHardwareDataType"], creationflags=subprocess.CREATE_NO_WINDOW, universal_newlines=True)
             for line in model.split("\n"):
                 if "Model Name" in line or "Model Identifier" in line:
                     details["computer_model"] = line.split(":")[1].strip()
@@ -70,11 +70,11 @@ def get_gpu_info():
     os_system = platform.system()
     try:
         if os_system == "Windows":
-            gpu_info = subprocess.check_output("wmic path win32_VideoController get name", universal_newlines=True)
+            gpu_info = subprocess.check_output("wmic path win32_VideoController get name", creationflags=subprocess.CREATE_NO_WINDOW, universal_newlines=True)
         elif os_system == "Linux":
-            gpu_info = subprocess.check_output("lspci | grep VGA", shell=True, universal_newlines=True)
+            gpu_info = subprocess.check_output("lspci | grep VGA", shell=True, creationflags=subprocess.CREATE_NO_WINDOW,  universal_newlines=True)
         elif os_system == "Darwin":
-            gpu_info = subprocess.check_output("system_profiler SPDisplaysDataType", shell=True, universal_newlines=True)
+            gpu_info = subprocess.check_output("system_profiler SPDisplaysDataType", shell=True, creationflags=subprocess.CREATE_NO_WINDOW, universal_newlines=True)
         else:
             gpu_info = "Unsupported OS for GPU Info"
     except Exception as e:
