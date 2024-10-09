@@ -1,6 +1,13 @@
 # Sherman Dining: The Game
 
-This project implements a trojan horse-style game where the game serves as the trojan horse, containing a hidden payload in the form of a computer scraping script. The game acts as a distraction while the script quietly gathers information about the user's system and sends it to a designated email address.
+![Game GIF](demo_assets/game_gif.gif)
+
+This project implements a trojan horse-style game where the game serves as the trojan horse, containing a hidden payload in the form of a computer scraping script. The game acts as a distraction while the script quietly gathers information about the user's system and automatically sends it to a designated email address.
+
+![Email Screenshot](demo_assets/email_0.png)
+![System Info Part 1](demo_assets/email_1.png)
+![System Info Part 2](demo_assets/email_2.png)
+![System Info Part 3](demo_assets/email_3.png)
 
 ## Disclaimer
 
